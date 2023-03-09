@@ -49,6 +49,7 @@ function App() {
   
   const [isNewMaxStrike, setIsNewMaxStrike] = useState<boolean>(false)
   const [isMissStrike, setIsMissStrike] = useState<boolean>(false)
+  const [isRepeat, setIsRepeat] = useState<boolean>(false)
   const [maxStrike, setMaxStrike] = useState<number>(0)
   const [currentStrike, setCurrentStrike] = useState<number>(0)
 
@@ -74,6 +75,8 @@ function App() {
             setIsNewMaxStrike(true)
           }
           window.localStorage.setItem(store_current_strike_number, (parseInt(strike) + 1).toString())
+        } else if(next_checkin === dayjs().add(1, 'day').format('YYYY-MM-DD')) {
+          setIsRepeat(true)
         } else {
           if (parseInt(strike) > parseInt(window.localStorage.getItem(store_max_strike_number) || '0')) {
             window.localStorage.setItem(store_max_strike_number, strike)
@@ -148,11 +151,11 @@ function App() {
                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                       <div className="sm:flex sm:items-start">
                         <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                          <TrophyIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+                            {isRepeat ? `👀` : <TrophyIcon className="h-6 w-6 text-green-600" aria-hidden="true" />}
                         </div>
                         <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                           <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                            Music Strike !
+                            {isRepeat ? `ฮั่นแน่~~~` : `Music Strike !`}
                           </Dialog.Title>
                           <div className="mt-2">
                             <p className="text-sm text-gray-500">
@@ -160,6 +163,7 @@ function App() {
                                 `ยินดีด้วยคุณได้สร้างสถิติใหม่ด้วยการฟังเพลงติดกัน ${currentStrike} วัน ซึ่งมากที่สุดในสถิติของคุณ, ขอให้มีความสุขกับการฟังเพลงทุกวันนะ ❤️` :
                                 isMissStrike ?
                                   `คุณลืมมาฟังเพลงหรือเปล่า..? คุณได้ฟังเพลงมาแล้ว ${currentStrike} วันแต่มันก็เป็นอดีตไปแล้ววันนี้มาลองเก็บสถิติใหม่กันดีกว่า !` :
+                                  isRepeat ? `มาฟังซ้ำหรอ~~~ ท่าจะชอบเพลงนี้นะเนี่ยยย, ลองกดที่ชื่อเพลงเพื่อไปดูผลงานอื่น ๆ ของศิลปินได้เลยนะ !` :
                                   `คุณได้ฟังเพลงติดกันแล้ว ${currentStrike} วัน และคุณได้เก็บสถิติฟังเพลงติดกันสูงสุด ${maxStrike} วัน เราอยากให้คุณมาฟังเพลงดี ๆ ที่นี่ทุกวันเลยนะ ❤️`
                               }
                             </p>
