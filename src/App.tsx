@@ -9,7 +9,6 @@ import axios from 'axios'
 import './App.css';
 
 const submit_music_url = 'https://airtable.com/embed/shrLN7ePgoPPQzS3s'
-const random_seed = 'IamKiznick'
 
 type DailyMusic = (
     {
@@ -31,6 +30,10 @@ function randomArraySeed<T>(arr: T[], seed: string): T {
     const random = seedrandom(seed.toString())
     const randomIndex: number = Math.floor(random() * arr.length)
     return arr[randomIndex]
+}
+
+function number_format(n: number): string {
+    return (+n).toFixed(0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1,')
 }
 
 function App() {
@@ -60,7 +63,7 @@ function App() {
                 .then(res => {
                     const data = res.data
                     setIsLoading(false)
-                    const music: MusicData = randomArraySeed(data, random_seed)
+                    const music: MusicData = randomArraySeed(data, today)
                     if(!music) {
                         return setDailyMusic(null)
                     }
@@ -195,11 +198,11 @@ function App() {
                                                     <div className="mt-2">
                                                         <p className="text-sm text-gray-500">
                                                             {isNewMaxStrike ?
-                                                                `ยินดีด้วยคุณได้สร้างสถิติใหม่ด้วยการฟังเพลงติดกัน ${currentStrike} วัน ซึ่งมากที่สุดในสถิติของคุณ, ขอให้มีความสุขกับการฟังเพลงทุกวันนะ ❤️` :
+                                                                `ยินดีด้วยคุณได้สร้างสถิติใหม่ด้วยการฟังเพลงติดกัน ${number_format(currentStrike)} วัน ซึ่งมากที่สุดในสถิติของคุณ, ขอให้มีความสุขกับการฟังเพลงทุกวันนะ ❤️` :
                                                                 isMissStrike ?
-                                                                    `คุณลืมมาฟังเพลงหรือเปล่า..? คุณได้ฟังเพลงมาแล้ว ${currentStrike} วันแต่มันก็เป็นอดีตไปแล้ววันนี้มาลองเก็บสถิติใหม่กันดีกว่า !` :
+                                                                    `คุณลืมมาฟังเพลงหรือเปล่า..? คุณได้ฟังเพลงมาแล้ว ${number_format(currentStrike)} วันแต่มันก็เป็นอดีตไปแล้ววันนี้มาลองเก็บสถิติใหม่กันดีกว่า !` :
                                                                     isRepeat ? `มาฟังซ้ำหรอ~~~ ท่าจะชอบเพลงนี้นะเนี่ยยย, ลองกดที่ชื่อเพลงเพื่อไปดูผลงานอื่น ๆ ของศิลปินได้เลยนะ !` :
-                                                                        `คุณได้ฟังเพลงติดกันแล้ว ${currentStrike} วัน และคุณได้เก็บสถิติฟังเพลงติดกันสูงสุด ${maxStrike} วัน เราอยากให้คุณมาฟังเพลงดี ๆ ที่นี่ทุกวันเลยนะ ❤️`
+                                                                        `คุณได้ฟังเพลงติดกันแล้ว ${number_format(currentStrike)} วัน และคุณได้เก็บสถิติฟังเพลงติดกันสูงสุด ${number_format(maxStrike)} วัน เราอยากให้คุณมาฟังเพลงดี ๆ ที่นี่ทุกวันเลยนะ ❤️`
                                                             }
                                                         </p>
                                                     </div>
@@ -228,7 +231,7 @@ function App() {
                         dailyMusic ? (
                             <>
                                 <h1 className="text-3xl mb-1">
-                        Daily music <span className="text-pink-400 text-lg">({dayjs(dailyMusic.date).format('D MMMM YYYY')})</span>
+                                    Daily music <span className="text-pink-400 text-lg">({dayjs(dailyMusic.date).format('D MMMM YYYY')})</span>
                                 </h1>
 
                                 <p className="heading-text mb-1 hover:text-pink-200">
