@@ -14,6 +14,8 @@ dayjs.extend(customParseFormat)
 const submit_music_url = 'https://airtable.com/embed/shrLN7ePgoPPQzS3s'
 const music_list = 'https://dailymusic-list.kiznick.me'
 
+const start_project_date = '2023-03-10'
+
 type DailyMusic = (
     {
         date: string
@@ -65,7 +67,7 @@ function App() {
         
         if(window.location.pathname !== '/') {
             const input_date = dayjs(window.location.pathname.slice(1), 'YYYY-MM-DD', true)
-            if(input_date.isValid()) {
+            if(input_date.isValid() && !input_date.isBefore(dayjs(start_project_date, 'YYYY-MM-DD', true))) {
                 const today = input_date.format('YYYY-MM-DD')
                 axios.get(`${music_list}/${dayjs(input_date).format('YYYY')}/${dayjs(input_date).format('M')}.json`)
                     .then(res => {
