@@ -1,5 +1,6 @@
 import Youtube from 'react-youtube'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import seedrandom from 'seedrandom';
 import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
@@ -8,7 +9,10 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import axios from 'axios'
 import './App.css';
 
+dayjs.extend(customParseFormat)
+
 const submit_music_url = 'https://airtable.com/embed/shrLN7ePgoPPQzS3s'
+const music_list = 'https://dailymusic-list.kiznick.me'
 
 type DailyMusic = (
     {
@@ -38,28 +42,8 @@ function number_format(n: number): string {
 
 function App() {
     useEffect(() => {
-        const today = dayjs().format('YYYY-MM-DD')
-        axios.get(`https://dailymusic-list.kiznick.me/${dayjs().format('YYYY')}/${dayjs().format('M')}.json`)
-            .then(res => {
-                const data = res.data
-                setIsLoading(false)
-                if(!data[today]) {
-                    return getRandomMusic()
-                }
-                return setDailyMusic({
-                    date: today,
-                    ...data[today]
-                })
-            })
-            .catch(err => {
-                getRandomMusic()
-
-                console.error(err)
-                alert('Error: ' + err)
-            })
-        
-        function getRandomMusic() {
-            return axios.get(`https://dailymusic-list.kiznick.me/all.json`)
+        function getRandomMusic(today: string) {
+            return axios.get(`${music_list}/all.json`)
                 .then(res => {
                     const data = res.data
                     setIsLoading(false)
@@ -78,6 +62,48 @@ function App() {
                     alert('Error: ' + err)
                 })
         }
+        
+        if(window.location.pathname !== '/') {
+            const input_date = dayjs(window.location.pathname.slice(1), 'YYYY-MM-DD', true)
+            if(input_date.isValid()) {
+                const today = input_date.format('YYYY-MM-DD')
+                axios.get(`${music_list}/${dayjs(input_date).format('YYYY')}/${dayjs(input_date).format('M')}.json`)
+                    .then(res => {
+                        const data = res.data
+                        setIsLoading(false)
+                        if(!data[today]) {
+                            return getRandomMusic(today)
+                        }
+                        return setDailyMusic({
+                            date: today,
+                            ...data[today]
+                        })
+                    })
+                    .catch(err => {
+                        getRandomMusic(today)
+                    })
+                return
+            }
+        }
+
+        const today = dayjs().format('YYYY-MM-DD')
+        axios.get(`${music_list}/${dayjs().format('YYYY')}/${dayjs().format('M')}.json`)
+            .then(res => {
+                const data = res.data
+                setIsLoading(false)
+                if(!data[today]) {
+                    return getRandomMusic(today)
+                }
+                return setDailyMusic({
+                    date: today,
+                    ...data[today]
+                })
+            })
+            .catch(err => {
+                getRandomMusic(today)
+
+                console.error(err)
+            })
     }, [])
 
     const [isLoading, setIsLoading] = useState<boolean>(true)
