@@ -60,8 +60,8 @@ function App() {
                 })
                 .catch(err => {
                     setIsLoading(false)
+
                     console.error(err)
-                    alert('Error: ' + err)
                 })
         }
         
@@ -83,6 +83,8 @@ function App() {
                     })
                     .catch(err => {
                         getRandomMusic(today)
+
+                        console.error(err)
                     })
                 return
             }
