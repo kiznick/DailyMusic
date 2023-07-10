@@ -67,7 +67,7 @@ function App() {
         
         if(window.location.pathname !== '/') {
             const input_date = dayjs(window.location.pathname.slice(1), 'YYYY-MM-DD', true)
-            if(input_date.isValid() && !input_date.isBefore(dayjs(start_project_date, 'YYYY-MM-DD', true)) && !input_date.isAfter(dayjs())) {
+            if(input_date.isValid() && !(input_date.isBefore(dayjs(start_project_date, 'YYYY-MM-DD', true)) || input_date.isAfter(dayjs()))) {
                 const today = input_date.format('YYYY-MM-DD')
                 axios.get(`${music_list}/${dayjs(input_date).format('YYYY')}/${dayjs(input_date).format('M')}.json`)
                     .then(res => {
