@@ -73,6 +73,7 @@ function App() {
                     .then(res => {
                         const data = res.data
                         setIsLoading(false)
+                        setIsTimeMachine(true)
                         if(!data[today]) {
                             return getRandomMusic(today)
                         }
@@ -120,8 +121,14 @@ function App() {
     const [isRepeat, setIsRepeat] = useState<boolean>(false)
     const [maxStrike, setMaxStrike] = useState<number>(0)
     const [currentStrike, setCurrentStrike] = useState<number>(0)
+    
+    const [isTimeMachine, setIsTimeMachine] = useState<boolean>(false)
 
     function checkStrike() {
+        if(isTimeMachine) {
+            return
+        }
+        
         if (typeof window == "undefined" || !window.localStorage) {
             return alert('Your browser does not support local storage. Please use another browser.')
         }
